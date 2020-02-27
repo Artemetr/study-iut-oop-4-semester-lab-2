@@ -1,110 +1,152 @@
-//
-// Created by Artem on 25.02.2020.
-//
-
 #include "CComputer.h"
 
-void CComputer::setCpuFrequency(int value) {
-    if (value < 1) {
-        throw "Incorrect CPU frequency value!";
-    }
-    this->cpuFrequency = value;
+int CComputer::total_hdd_size_;
+
+CComputer::CComputer()
+{
+	CComputer::total_hdd_size_ += 1;
 }
 
-int CComputer::getCpuFrequency() {
-    return this->cpuFrequency;
+void CComputer::set_cpu_frequency(int value) {
+	if (value < 1) {
+		throw "Incorrect CPU frequency value!";
+	}
+	this->cpu_frequency_ = value;
 }
 
-void CComputer::setCoresQuantity(int value) {
-    if (value < 1) {
-        throw "Incorrect CPU cores quantity value!";
-    }
-    this->coresQuantity = value;
+int CComputer::get_cpu_frequency() {
+	return this->cpu_frequency_;
 }
 
-int CComputer::getCoresQuantity() {
-    return this->cpuFrequency;
+void CComputer::set_cores_quantity(int value) {
+	if (value < 1) {
+		throw "Incorrect CPU cores quantity value!";
+	}
+	this->cores_quantity_ = value;
 }
 
-void CComputer::setRamSize(int value) {
-    if (value < 1) {
-        throw "Incorrect RAM capacity value!";
-    }
-    this->ramSize = value;
+int CComputer::get_cores_quantity() {
+	return this->cpu_frequency_;
 }
 
-int CComputer::getRamSize() {
-    return this->ramSize;
+void CComputer::set_ram_size(int value) {
+	if (value < 1) {
+		throw "Incorrect RAM capacity value!";
+	}
+	this->ram_size_ = value;
 }
 
-void CComputer::setHddSize(int value) {
-    if (value < 1) {
-        throw "Incorrect HDD capacity value!";
-    }
-    this->hddSize = value;
+int CComputer::get_ram_size() {
+	return this->ram_size_;
 }
 
-int CComputer::getHddSize() {
-    return this->hddSize;
+void CComputer::set_hdd_size(int value) {
+	if (value < 1) {
+		throw "Incorrect HDD capacity value!";
+	}
+	
+	CComputer::total_hdd_size_ += (value - this->hdd_size_);
+	
+	this->hdd_size_ = value;
 }
 
-void CComputer::setFreezeHddSize(int value) {
-    if (value < 0 || value > this->getHddSize()) {
-        throw "Incorrect freeze HDD capacity value!";
-    }
-    this->freezeHddSize = value;
+int CComputer::get_hdd_size() {
+	return this->hdd_size_;
 }
 
-int CComputer::getFreezeHddSize() {
-    return this->freezeHddSize;
+void CComputer::set_freeze_hdd_size(int value) {
+	if (value < 0 || value > this->get_hdd_size()) {
+		throw "Incorrect freeze HDD capacity value!";
+	}
+	this->freeze_hdd_size_ = value;
 }
 
-void CComputer::setHddSizeParams(int freezeSize, int size) {
-    if (size > 0) {
-        this->setHddSize(size);
-    }
-
-    if (freezeSize < 0 || freezeSize > this->getHddSize()) {
-        throw "Incorrect freeze HDD capacity value!";
-    }
-    this->setFreezeHddSize(freezeSize);
+int CComputer::get_freeze_hdd_size() {
+	return this->freeze_hdd_size_;
 }
 
-int CComputer::getFreeHddSize() {
-    return this->getHddSize() - this->getFreezeHddSize();
+void CComputer::set_hdd_size_params(int freezeSize, int size) {
+	if (size > 0) {
+		this->set_hdd_size(size);
+	}
+
+	if (freezeSize < 0 || freezeSize > this->get_hdd_size()) {
+		throw "Incorrect freeze HDD capacity value!";
+	}
+	this->set_freeze_hdd_size(freezeSize);
 }
 
-bool CComputer::canWriteFileSize(int size) {
-    if (size < 1) {
-        throw "Incorrect file size!";
-    }
-
-    return this->getFreeHddSize() >= size;
+int CComputer::get_free_hdd_size() {
+	return this->get_hdd_size() - this->get_freeze_hdd_size();
 }
 
-std::string CComputer::getInfo() {
-    std::string info = "";
+bool CComputer::can_write_file_size(int size) {
+	if (size < 1) {
+		throw "Incorrect file size!";
+	}
 
-    info.append("Computer parameters:\n");
-    info.append(" * CPU frequency - ");
-    info.append((char*)this->getCpuFrequency());
-    info.append("Hz;\n");
+	return this->get_free_hdd_size() >= size;
+}
 
-    info.append(" * CPU cores - ");
-    info.append((char*)this->getCoresQuantity());
-    info.append(";\n");
+std::string CComputer::get_info() {
+	std::string info;
 
-    info.append(" * RAM size - ");
-    info.append((char*)this->getRamSize());
-    info.append(";\n");
+	info.append("Computer parameters:\n");
+	
+	info.append(" * CPU frequency - ");
+	info.append(std::to_string(this->get_cpu_frequency()));
+	info.append("Hz;\n");
 
-    info.append(" * HDD size - ");
-    info.append((char*)this->getHddSize());
-    info.append(";\n");
+	info.append(" * CPU cores - ");
+	info.append(std::to_string(this->get_cores_quantity()));
+	info.append(";\n");
 
-    info.append(" * HDD size - ");
-    info.append((char*)this->getHddSize());
-    info.append(";\n");
+	info.append(" * RAM size - ");
+	info.append(std::to_string(this->get_ram_size()));
+	info.append(";\n");
 
-    return fromat("Computer parameters:\n");
+	info.append(" * HDD size - ");
+	info.append(std::to_string(this->get_hdd_size()));
+	info.append(";\n");
+
+
+	info.append(" * HDD freeze size - ");
+	info.append(std::to_string(this->get_free_hdd_size()));
+	info.append(".\n");
+
+	return info;
+}
+
+int CComputer::get_total_hdd_size()
+{
+	return CComputer::total_hdd_size_;
+}
+
+bool operator==(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() == c2.get_cores_quantity();
+}
+
+bool operator!=(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() != c2.get_cores_quantity();
+}
+
+bool operator>(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() > c2.get_cores_quantity();
+}
+
+bool operator>=(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() >= c2.get_cores_quantity();
+}
+
+bool operator<(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() < c2.get_cores_quantity();
+}
+
+bool operator<=(CComputer c1, CComputer c2) {
+	return c1.get_cores_quantity() <= c2.get_cores_quantity();
+}
+
+std::ostream& operator<<(std::ostream& out, CComputer cComputer) {
+	out << cComputer.get_info();
+	return out;
 }
